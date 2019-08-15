@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright (c) 2009, 2019 Mountainminds GmbH & Co. KG and Contributors
+   All rights reserved. This program and the accompanying materials
+   are made available under the terms of the Eclipse Public License v1.0
+   which accompanies this distribution, and is available at
+   http://www.eclipse.org/legal/epl-v10.html
+
+   Contributors:
+      Evgeny Mandrikov - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jacoco</groupId>
+    <artifactId>org.jacoco.tests</artifactId>
+    <version>0.8.4</version>
+    <relativePath>../org.jacoco.tests</relativePath>
+  </parent>
+
+  <artifactId>jacoco-maven-plugin.test</artifactId>
+  <packaging>jar</packaging>
+
+  <name>JaCoCo :: Test :: Maven Plugin</name>
+
+  <properties>
+    <!-- Enable recording of coverage during execution of maven-invoker-plugin -->
+    <jacoco.propertyName>invoker.mavenOpts</jacoco.propertyName>
+    <jacoco.includes>org.jacoco.maven.*</jacoco.includes>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- To run with different Maven versions use -Dinvoker.mavenHome -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-invoker-plugin</artifactId>
+        <configuration>
+          <skipInvocation>${skipTests}</skipInvocation>
+          <projectsDirectory>it</projectsDirectory>
+          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+          <pomIncludes>
+            <pomInclude>*/pom.xml</pomInclude>
+          </pomIncludes>
+          <postBuildHookScript>verify</postBuildHookScript>
+          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+          <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+          </goals>
+          <settingsFile>it/settings.xml</settingsFile>
+          <extraArtifacts>
+            <extraArtifact>org.jacoco:org.jacoco.agent:${project.version}:jar:runtime</extraArtifact>
+          </extraArtifacts>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>install</goal>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

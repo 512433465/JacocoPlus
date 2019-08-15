@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" href="resources/doc.css" charset="UTF-8" type="text/css" />
+  <link rel="stylesheet" href="../coverage/jacoco-resources/prettify.css" charset="UTF-8" type="text/css" />
+  <link rel="shortcut icon" href="resources/report.gif" type="image/gif" />
+  <style>
+    table, th, td {
+      border-collapse: collapse;
+      padding: 3px;
+    }
+    table tbody tr td {
+      border-left: #b0b0b0 3px solid;
+    }
+    table tbody tr td:nth-child(2) {
+      border-left: none;
+    }
+    th {
+      background-color:#e0e0e0;
+    }
+    table tbody td:hover {
+      background: #f0f0d0;
+    }
+  </style>
+  <script type="text/javascript" src="../coverage/jacoco-resources/prettify.js"></script>
+  <title>JaCoCo - Build</title>
+</head>
+<body onload="prettyPrint()">
+
+<div class="breadcrumb">
+  <a href="../index.html" class="el_report">JaCoCo</a> &gt;
+  <a href="index.html" class="el_group">Documentation</a> &gt;
+  <span class="el_source">Build</span>
+</div>
+<div id="content"> 
+
+<h1>Build</h1>
+
+<p>
+  The JaCoCo build is based on <a href="http://maven.apache.org/">Maven</a> and
+  can be locally executed on every machine with a proper
+  <a href="environment.html">environment setup</a>. In particular you need at
+  least <a href="http://maven.apache.org/">Maven 3.3.9</a> and JDK 8
+  installations. Developers are encouraged to run the build before every commit
+  to ensure consistency of the source tree.
+</p>
+
+
+<h2>Running the Build</h2>
+
+<p>
+  The build can be started by executing the following command with
+  <code>./org.jacoco.build/</code> as the working directory:
+</p>
+
+<pre>
+  mvn clean install
+</pre>
+
+<p>
+  Total build time is typically around 3 minutes, however first build might take
+  more time, because Maven should download plugins and dependencies. The
+  download ZIP will be created at the following location:
+</p>
+
+<pre>
+  ./jacoco/target/jacoco-<i>x.y.z.qualifier</i>.zip
+</pre>
+
+
+<h2>Running Quick Build without Tests</h2>
+
+<p>
+  It is not recommended, however possible to the run build without any tests:
+</p>
+
+<pre>
+  mvn clean install -DskipTests
+</pre>
+
+
+<h2>Compilation and testing with different JDKs</h2>
+
+<p>
+  By default for compilation and execution of tests will be used JDK that runs
+  Maven. Alternatively you can use JDK from
+  <a href="http://maven.apache.org/guides/mini/guide-using-toolchains.html">Maven
+  Toolchains</a> by setting property <code>jdk.version</code>.
+</p>
+
+<p>
+  Following table shows how modules will be compiled depending on version of JDK:
+</p>
+
+<table>
+  <thead>
+  <tr>
+    <th></th>
+    <th>JDK 5</th>
+    <th>JDK 6</th>
+    <th>JDK 7</th>
+    <th>JDK 8</th>
+    <th>JDK 9</th>
+    <th>JDK 10</th>
+    <th>JDK 11</th>
+    <th>JDK 12</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <th>org.jacoco.core.test.validation.java8</th>
+    <td colspan="3">excluded from build</td>
+    <td colspan="5">compiled into bytecode version 52 (Java 8)</td>
+  </tr>
+  <tr>
+    <th>org.jacoco.core.test.validation.java7</th>
+    <td colspan="2">excluded from build</td>
+    <td colspan="6" rowspan="2">compiled into bytecode version 51 (Java 7)</td>
+  </tr>
+  <tr>
+    <th>org.jacoco.core.test.validation.groovy</th>
+    <td colspan="2">excluded from build</td>
+  </tr>
+  <tr>
+    <th>org.jacoco.core.test.validation.kotlin</th>
+    <td colspan="1">excluded from build</td>
+    <td colspan="6">compiled into bytecode version 50 (Java 6)</td>
+    <td rowspan="2">compiled into bytecode version 51 (Java 7)</td>
+  </tr>
+  <tr>
+    <th>all other modules</th>
+    <td colspan="4">compiled into bytecode version 49 (Java 5)</td>
+    <td colspan="3">compiled into bytecode version 50 (Java 6)</td>
+  </tr>
+  </tbody>
+</table>
+
+<p>
+  Alternatively you can specify bytecode version for all modules using property
+  <code>bytecode.version</code>.
+</p>
+
+<p>
+  For example to use JDK 10 from Maven Toolchains and compile all modules
+  into bytecode version 53 (Java 9):
+</p>
+
+<pre>
+  mvn clean install -Djdk.version=10 -Dbytecode.version=9
+</pre>
+
+<p>
+  Also Eclipse Compiler for Java can be used for compilation:
+</p>
+
+<pre>
+  mvn clean install -Decj
+</pre>
+
+<p>
+  Combining these options JaCoCo is regularly tested with the following setups:
+</p>
+
+<ul>
+  <li><code>mvn clean install -Djdk.version=5 -Dbytecode.version=5</code></li>
+  <li><code>mvn clean install -Djdk.version=6 -Dbytecode.version=6</code></li>
+  <li><code>mvn clean install -Djdk.version=7 -Dbytecode.version=7</code></li>
+  <li><code>mvn clean install -Djdk.version=8 -Dbytecode.version=8</code></li>
+  <li><code>mvn clean install -Djdk.version=8 -Dbytecode.version=8 -Decj</code></li>
+  <li><code>mvn clean install -Djdk.version=9 -Dbytecode.version=9</code></li>
+  <li><code>mvn clean install -Djdk.version=10 -Dbytecode.version=10</code></li>
+  <li><code>mvn clean install -Djdk.version=11 -Dbytecode.version=11</code></li>
+  <li><code>mvn clean install -Djdk.version=12 -Dbytecode.version=12</code></li>
+</ul>
+
+
+</div>
+<div class="footer">
+  <span class="right"><a href="@jacoco.home.url@">JaCoCo</a> @qualified.bundle.version@</span>
+  <a href="license.html">Copyright</a> &copy; @copyright.years@ Mountainminds GmbH &amp; Co. KG and Contributors
+</div>
+
+</body>
+</html>

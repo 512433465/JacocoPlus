@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+   Copyright (c) 2009, 2019 Mountainminds GmbH & Co. KG and Contributors
+   All rights reserved. This program and the accompanying materials
+   are made available under the terms of the Eclipse Public License v1.0
+   which accompanies this distribution, and is available at
+   http://www.eclipse.org/legal/epl-v10.html
+  
+   Contributors:
+      Marc R. Hoffmann - initial API and implementation
+-->
+
+<project name="Example Ant Build with JaCoCo Offline Instrumentation" default="rebuild" xmlns:jacoco="antlib:org.jacoco.ant">
+	
+	<description>
+	  Example Ant build file that demonstrates how JaCoCo can be used with
+	  offline instrumentation. This requires preprocessing of the class files
+	  before the test is launched and adding the JaCoCo agent to the classpath.
+	</description>
+
+	<property name="src.dir" location="./src/main/java" />
+	<property name="result.dir" location="./target" />
+	<property name="result.classes.dir" location="${result.dir}/classes" />
+	<property name="result.classes.instr.dir" location="${result.dir}/classes-instr" />
+	<property name="result.report.dir" location="${result.dir}/site/jacoco" />
+	<property name="result.exec.file" location="${result.dir}/jacoco.exec" />
+
+	<!-- Step 1: Import JaCoCo Ant tasks -->
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+		<classpath path="../../../lib/jacocoant.jar" />
+	</taskdef>
+
+	<target name="clean">
+		<delete dir="${result.dir}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${result.classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${result.classes.dir}" debug="true" includeantruntime="false" />
+	</target>
+
+	<target name="instrument" depends="compile">
+		<!-- Step 2: Instrument class files -->
+		<jacoco:instrument destdir="${result.classes.instr.dir}">
+			<fileset dir="${result.classes.dir}" />
+		</jacoco:instrument>
+	</target>
+
+	
+	<target name="test" depends="instrument">
+		<!-- Step 3: Run tests with instrumented classes -->
+		<java classname="org.jacoco.examples.parser.Main" fork="true">
+			<!-- jacocoagent.jar must be on the classpath --> 
+			<classpath>
+				<pathelement path="../../../lib/jacocoagent.jar"/>
+				<pathelement path="${result.classes.instr.dir}" />
+			</classpath>
+			<!-- Agent is configured with system properties -->
+			<sysproperty key="jacoco-agent.destfile" file="${result.exec.file}"/>
+			<arg value="2 * 3 + 4"/>
+			<arg value="2 + 3 * 4"/>
+			<arg value="(2 + 3) * 4"/>
+			<arg value="2 * 2 * 2 * 2"/>
+			<arg value="1 + 2 + 3 + 4"/>
+			<arg value="2 * 3 + 2 * 5"/>
+		</java>
+	</target>
+
+	<target name="report" depends="test">
+		<!-- Step 4: Create coverage report -->
+		<jacoco:report>
+
+			<!-- This task needs the collected execution data and ... -->
+			<executiondata>
+				<file file="${result.exec.file}" />
+			</executiondata>
+
+			<!-- the class files and optional source files ... -->
+			<structure name="JaCoCo Ant Example">
+				<classfiles>
+					<fileset dir="${result.classes.dir}" />
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="${src.dir}" />
+				</sourcefiles>
+			</structure>
+
+			<!-- to produce reports in different formats. -->
+			<html destdir="${result.report.dir}" />
+			<csv destfile="${result.report.dir}/report.csv" />
+			<xml destfile="${result.report.dir}/report.xml" />
+		</jacoco:report>
+	</target>
+
+	<target name="rebuild" depends="clean,compile,instrument,test,report" />
+
+</project>

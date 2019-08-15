@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright (c) 2009, 2019 Mountainminds GmbH & Co. KG and Contributors
+   All rights reserved. This program and the accompanying materials
+   are made available under the terms of the Eclipse Public License v1.0
+   which accompanies this distribution, and is available at
+   http://www.eclipse.org/legal/epl-v10.html
+
+   Contributors:
+      Evgeny Mandrikov - initial API and implementation
+-->
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${basedir}/../org.jacoco.doc/docroot</directory>
+      <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
+      <includes>
+        <include>**/*.html</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../org.jacoco.doc/target/generated-resources/xml/xslt</directory>
+      <outputDirectory>/doc</outputDirectory>
+      <filtered>false</filtered>
+      <includes>
+        <include>*.html</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../org.jacoco.doc/docroot</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>**/*.html</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../org.jacoco.doc/target/site/jacoco-aggregate</directory>
+      <outputDirectory>/coverage</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../org.jacoco.doc/target/junit</directory>
+      <outputDirectory>/test</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>${basedir}/../org.jacoco.report/src/org/jacoco/report/xml/report.dtd</source>
+      <outputDirectory>/coverage</outputDirectory>
+    </file>
+  </files>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <outputFileNameMapping>jacocoant.jar</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>${project.groupId}:org.jacoco.ant:jar:nodeps</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <outputFileNameMapping>jacococli.jar</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>${project.groupId}:org.jacoco.cli:jar:nodeps</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <outputFileNameMapping>jacocoagent.jar</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>${project.groupId}:org.jacoco.agent:*:runtime</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <outputFileNameMapping>${artifact.artifactId}-${qualified.bundle.version}.${artifact.extension}</outputFileNameMapping>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>${project.groupId}:org.jacoco.core</include>
+        <include>${project.groupId}:org.jacoco.report</include>
+        <include>${project.groupId}:org.jacoco.agent</include>
+        <include>${project.groupId}:org.jacoco.ant</include>
+      </includes>
+      <excludes>
+        <exclude>${project.groupId}:org.jacoco.agent:*:runtime</exclude>
+        <exclude>${project.groupId}:org.jacoco.ant:*:nodeps</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/doc</outputDirectory>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>${project.groupId}:org.jacoco.examples:zip</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/doc/api</outputDirectory>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <unpackOptions>
+        <excludes>
+          <exclude>META-INF/</exclude>
+        </excludes>
+      </unpackOptions>
+      <includes>
+        <include>${project.groupId}:org.jacoco.doc:*:javadoc</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
