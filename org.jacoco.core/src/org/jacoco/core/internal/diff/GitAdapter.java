@@ -68,7 +68,9 @@ public class GitAdapter {
      * @param password  git用户密码
      */
     public static void setCredentialsProvider(String username, String password) {
-        usernamePasswordCredentialsProvider = new UsernamePasswordCredentialsProvider(username,password);
+        if(usernamePasswordCredentialsProvider == null || !usernamePasswordCredentialsProvider.isInteractive()){
+            usernamePasswordCredentialsProvider = new UsernamePasswordCredentialsProvider(username,password);
+        }
     }
 
     /**
@@ -110,7 +112,7 @@ public class GitAdapter {
     /**
      * 切换分支
      * @param branchName    分支名称
-     * @throws GitAPIException
+     * @throws GitAPIException GitAPIException
      */
     public void checkOut(String branchName) throws GitAPIException {
         //  切换分支
@@ -118,11 +120,10 @@ public class GitAdapter {
     }
 
     /**
-     * TODO gitHub无法更新
      * 更新分支代码
      * @param localRef      本地分支
      * @param branchName    分支名称
-     * @throws GitAPIException
+     * @throws GitAPIException GitAPIException
      */
     public void checkOutAndPull(Ref localRef, String branchName) throws GitAPIException {
         boolean isCreateBranch = localRef == null;
@@ -139,7 +140,7 @@ public class GitAdapter {
      * 判断本地分支是否是最新版本。目前不考虑分支在远程仓库不存在，本地存在
      * @param localRef  本地分支
      * @return  boolean
-     * @throws GitAPIException
+     * @throws GitAPIException GitAPIException
      */
     private boolean checkBranchNewVersion(Ref localRef) throws GitAPIException {
         String localRefName = localRef.getName();

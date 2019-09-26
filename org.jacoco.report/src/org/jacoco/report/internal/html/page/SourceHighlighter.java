@@ -97,7 +97,7 @@ final class SourceHighlighter {
 				String tClassPath = classInfo.getPackages() + "." + classInfo.getClassName();
 				if (classPath.equals(tClassPath)) {
 					//	新增的类
-					if (classInfo.getType().equals("ADD")) {
+					if ("ADD".equalsIgnoreCase(classInfo.getType())) {
 						highlight(pre, line, lineNr).text("+ " + linesrc);
 						pre.text("\n");
 					} else {
