@@ -14,11 +14,15 @@ package org.jacoco.report.internal.html.page;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import java.util.Locale;
 
+import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceNode;
+import org.jacoco.core.internal.analysis.SourceFileCoverageImpl;
+import org.jacoco.core.internal.diff.ClassInfo;
 import org.jacoco.report.internal.html.HTMLElement;
 import org.jacoco.report.internal.html.resources.Styles;
 
@@ -70,18 +74,59 @@ final class SourceHighlighter {
 		final HTMLElement pre = parent.pre(Styles.SOURCE + " lang-" + lang
 				+ " linenums");
 		final BufferedReader lineBuffer = new BufferedReader(contents);
+		String classPath = ((SourceFileCoverageImpl) source).getPackageName() + "." + source.getName().replaceAll(".java","");
+		classPath = classPath.replaceAll("/",".");
 		String line;
 		int nr = 0;
 		while ((line = lineBuffer.readLine()) != null) {
 			nr++;
-			renderCodeLine(pre, line, source.getLine(nr), nr);
+			renderCodeLine(pre, line, source.getLine(nr), nr,classPath);
 		}
 	}
 
 	private void renderCodeLine(final HTMLElement pre, final String linesrc,
-			final ILine line, final int lineNr) throws IOException {
-		highlight(pre, line, lineNr).text(linesrc);
-		pre.text("\n");
+			final ILine line, final int lineNr, final String classPath) throws IOException {
+		if (CoverageBuilder.classInfos == null || CoverageBuilder.classInfos.isEmpty()) {
+			//	全量覆盖
+			highlight(pre, line, lineNr).text(linesrc);
+			pre.text("\n");
+		} else {
+			//	增量覆盖
+			boolean existFlag = true;
+			for (ClassInfo classInfo : CoverageBuilder.classInfos) {
+				String tClassPath = classInfo.getPackages() + "." + classInfo.getClassName();
+				if (classPath.equals(tClassPath)) {
+					//	新增的类
+					if (classInfo.getType().equals("ADD")) {
+						highlight(pre, line, lineNr).text("+ " + linesrc);
+						pre.text("\n");
+					} else {
+						//	修改的类
+						boolean flag = false;
+						List<int[]> addLines = classInfo.getAddLines();
+						for (int[] ints: addLines) {
+							if (ints[0] <= lineNr &&  lineNr <= ints[1]){
+								flag = true;
+								break;
+							}
+						}
+						if (flag) {
+							highlight(pre, line, lineNr).text("+ " + linesrc);
+							pre.text("\n");
+						} else {
+							highlight(pre, line, lineNr).text(" " + linesrc);
+							pre.text("\n");
+						}
+					}
+					existFlag = false;
+					break;
+				}
+			}
+			if (existFlag) {
+				highlight(pre, line, lineNr).text(" " + linesrc);
+				pre.text("\n");
+			}
+		}
 	}
 
 	HTMLElement highlight(final HTMLElement pre, final ILine line,

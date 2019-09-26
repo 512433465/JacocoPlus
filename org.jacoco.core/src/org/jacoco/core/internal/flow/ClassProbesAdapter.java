@@ -11,10 +11,15 @@
  *******************************************************************************/
 package org.jacoco.core.internal.flow;
 
+import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.internal.diff.ClassInfo;
+import org.jacoco.core.internal.diff.MethodInfo;
 import org.jacoco.core.internal.instr.InstrSupport;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.AnalyzerAdapter;
+
+import java.util.List;
 
 /**
  * A {@link org.objectweb.asm.ClassVisitor} that calculates probes for every
@@ -63,13 +68,14 @@ public class ClassProbesAdapter extends ClassVisitor implements
 		final MethodProbesVisitor methodProbes;
 		final MethodProbesVisitor mv = cv.visitMethod(access, name, desc,
 				signature, exceptions);
-		if (mv == null) {
-			// We need to visit the method in any case, otherwise probe ids
-			// are not reproducible
-			methodProbes = EMPTY_METHOD_PROBES_VISITOR;
-		} else {
-			methodProbes = mv;
-		}
+        //	增量计算覆盖率
+        if (mv !=null && isContainsMethod(name, CoverageBuilder.classInfos)) {
+            methodProbes = mv;
+        } else {
+            // We need to visit the method in any case, otherwise probe ids
+            // are not reproducible
+            methodProbes = EMPTY_METHOD_PROBES_VISITOR;
+        }
 		return new MethodSanitizer(null, access, name, desc, signature,
 				exceptions) {
 
@@ -104,4 +110,22 @@ public class ClassProbesAdapter extends ClassVisitor implements
 		return counter++;
 	}
 
+    private boolean isContainsMethod(String currentMethod, List<ClassInfo> classInfos) {
+        if (classInfos== null || classInfos.isEmpty()) {
+            return true;
+        }
+        String currentClassName = name.replaceAll("/",".");
+        for (ClassInfo classInfo : classInfos) {
+            String className = classInfo.getPackages() + "." + classInfo.getClassName();
+            if (currentClassName.equals(className)) {
+                for (MethodInfo methodInfo: classInfo.getMethodInfos()) {
+                    String methodName = methodInfo.getMethodName();
+                    if (currentMethod.equals(methodName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

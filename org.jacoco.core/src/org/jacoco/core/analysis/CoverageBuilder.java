@@ -11,14 +11,12 @@
  *******************************************************************************/
 package org.jacoco.core.analysis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.jacoco.core.internal.analysis.BundleCoverageImpl;
 import org.jacoco.core.internal.analysis.SourceFileCoverageImpl;
+import org.jacoco.core.internal.diff.ClassInfo;
+import org.jacoco.core.internal.diff.CodeDiff;
 
 /**
  * Builder for hierarchical {@link ICoverageNode} structures from single
@@ -39,6 +37,8 @@ public class CoverageBuilder implements ICoverageVisitor {
 	private final Map<String, IClassCoverage> classes;
 
 	private final Map<String, ISourceFileCoverage> sourcefiles;
+
+	public static List<ClassInfo> classInfos;
 
 	/**
 	 * Create a new builder.
@@ -125,6 +125,33 @@ public class CoverageBuilder implements ICoverageVisitor {
 			sourcefiles.put(key, sourcefile);
 		}
 		return sourcefile;
+	}
+
+	/**
+	 * 分支之间比较
+	 * @param gitPath			本地git路径
+	 * @param newBranchName		新分支名称
+	 * @param oldBranchName		对比分支名称
+	 */
+	public CoverageBuilder(String gitPath, String newBranchName, String oldBranchName) {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		if (classInfos == null || classInfos.isEmpty()){
+			classInfos = CodeDiff.diffBranchToBranch(gitPath, newBranchName, oldBranchName);
+		}
+	}
+
+	/**
+	 * 分支和master比较
+	 * @param gitPath		本地git路径
+	 * @param branchName	新分支名称
+	 */
+	public CoverageBuilder(String gitPath, String branchName) {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		if (classInfos == null || classInfos.isEmpty()){
+			classInfos = CodeDiff.diffBranchToBranch(gitPath, branchName,CodeDiff.MASTER);
+		}
 	}
 
 }
