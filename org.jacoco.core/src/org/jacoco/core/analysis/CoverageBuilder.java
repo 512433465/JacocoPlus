@@ -47,6 +47,30 @@ public class CoverageBuilder implements ICoverageVisitor {
 	public CoverageBuilder() {
 		this.classes = new HashMap<String, IClassCoverage>();
 		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		classInfos = null;
+	}
+
+	/**
+	 * compare new  newBranchName withe oldBranchName
+	 * @param gitPath local gitPath
+	 * @param newBranchName newBranchName
+	 * @param oldBranchName oldBranchName
+	 */
+	public CoverageBuilder(String gitPath, String newBranchName, String oldBranchName) {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		classInfos = CodeDiff.diffBranchToBranch(gitPath, newBranchName, oldBranchName);
+	}
+
+	/**
+	 * compare new  branch withe master branch
+	 * @param gitPath local gitPath
+	 * @param branchName new test branch name
+	 */
+	public CoverageBuilder(String gitPath, String branchName) {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		classInfos = CodeDiff.diffBranchToBranch(gitPath, branchName,CodeDiff.MASTER);
 	}
 
 	/**
@@ -125,33 +149,6 @@ public class CoverageBuilder implements ICoverageVisitor {
 			sourcefiles.put(key, sourcefile);
 		}
 		return sourcefile;
-	}
-
-	/**
-	 * 分支之间比较
-	 * @param gitPath			本地git路径
-	 * @param newBranchName		新分支名称
-	 * @param oldBranchName		对比分支名称
-	 */
-	public CoverageBuilder(String gitPath, String newBranchName, String oldBranchName) {
-		this.classes = new HashMap<String, IClassCoverage>();
-		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
-		if (classInfos == null || classInfos.isEmpty()){
-			classInfos = CodeDiff.diffBranchToBranch(gitPath, newBranchName, oldBranchName);
-		}
-	}
-
-	/**
-	 * 分支和master比较
-	 * @param gitPath		本地git路径
-	 * @param branchName	新分支名称
-	 */
-	public CoverageBuilder(String gitPath, String branchName) {
-		this.classes = new HashMap<String, IClassCoverage>();
-		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
-		if (classInfos == null || classInfos.isEmpty()){
-			classInfos = CodeDiff.diffBranchToBranch(gitPath, branchName,CodeDiff.MASTER);
-		}
 	}
 
 }

@@ -41,13 +41,13 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.17.0</version>
+      <version>3.19.0</version>
     </dependency>
     <!--git操作-->
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>5.3.0.201903130848-r</version>
+      <version>5.5.0.201909110433-r</version>
     </dependency>
   </dependencies>
 
