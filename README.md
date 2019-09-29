@@ -84,9 +84,10 @@ public class ExecutionDataClient {
 	private ExecutionDataClient() {
 	}
 }
-这样就非常方便的不停服务的情况下，去导出exec文件了。
+
 
 ```
+这样就非常方便的不停服务的情况下，去导出exec文件了。
 
 ##### 四，基于Git分支差分解析jacoco.exec生成报告
 
@@ -230,9 +231,10 @@ public class ReportGenerator {
 	}
 
 }
-执行完后就可以生成报告了。通过第一步，第二步结合，就可以随时导出Ecec文件，生成报告，查看测试覆盖情况了。那种需要启停服务的
+
 
 ```
+执行完后就可以生成报告了。通过第一步，第二步结合，就可以随时导出Ecec文件，生成报告，查看测试覆盖情况了。那种需要启停服务的
 
 ##### 五 生成的差分报告展示
 
