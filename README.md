@@ -242,7 +242,7 @@ public class ReportGenerator {
 
 ![图片](https://github.com/512433465/JacocoTest/blob/master/Jacocorep1.png)
 
-![图片](https://github.com/512433465/JacocoTest/blob/master/Jacocorep12.png)
+![图片](https://github.com/512433465/JacocoTest/blob/master/Jacocorep11.png)
 
 覆盖的代码显示为绿色
 
