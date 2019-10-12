@@ -51,6 +51,17 @@ public class CoverageBuilder implements ICoverageVisitor {
 	}
 
 	/**
+	 * compare new  branch withe master branch
+	 * @param gitPath local gitPath
+	 * @param branchName new test branch name
+	 */
+	public CoverageBuilder(String gitPath, String branchName) {
+		this.classes = new HashMap<String, IClassCoverage>();
+		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
+		classInfos = CodeDiff.diffBranchToBranch(gitPath, branchName,CodeDiff.MASTER);
+	}
+
+	/**
 	 * compare new  newBranchName withe oldBranchName
 	 * @param gitPath local gitPath
 	 * @param newBranchName newBranchName
@@ -63,14 +74,16 @@ public class CoverageBuilder implements ICoverageVisitor {
 	}
 
 	/**
-	 * compare new  branch withe master branch
+	 * compare new Tag withe old Tag
 	 * @param gitPath local gitPath
-	 * @param branchName new test branch name
+	 * @param branchName develop branchName
+	 * @param newTag new Tag
+	 * @param oldTag old Tag
 	 */
-	public CoverageBuilder(String gitPath, String branchName) {
+	public CoverageBuilder(String gitPath, String branchName, String newTag, String oldTag) {
 		this.classes = new HashMap<String, IClassCoverage>();
 		this.sourcefiles = new HashMap<String, ISourceFileCoverage>();
-		classInfos = CodeDiff.diffBranchToBranch(gitPath, branchName,CodeDiff.MASTER);
+		classInfos = CodeDiff.diffTagToTag(gitPath,branchName, newTag, oldTag);
 	}
 
 	/**

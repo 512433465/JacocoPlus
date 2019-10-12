@@ -136,7 +136,7 @@ public class ReportGenerator {
 	public ReportGenerator(final File projectDirectory) {
 		this.title = projectDirectory.getName();
 		this.executionDataFile = new File(projectDirectory, "jacoco.exec");//第一步生成的exec的文件
-		this.classesDirectory = new File(projectDirectory, "bin");//目录下必须包含源码编译过的class文件,用来统计覆盖率。所以这里用server打出的jar包地址即可
+		this.classesDirectory = new File(projectDirectory, "bin");//目录下必须包含源码编译过的class文件,用来统计覆盖率。所以这里用server打出的jar包地址即可,运行的jar或者Class目录
 		this.sourceDirectory = new File(projectDirectory, "src/main/java");//源码目录
 		this.reportDirectory = new File(projectDirectory, "coveragereport");////要保存报告的地址
 	}
@@ -203,10 +203,16 @@ public class ReportGenerator {
 	private IBundleCoverage analyzeStructure() throws IOException {
 		//git登录授权
 		GitAdapter.setCredentialsProvider("QQ512433465", "mima512433465");
-		
+		//全量覆盖
 //		final CoverageBuilder coverageBuilder = new CoverageBuilder();
+        
+        
+        //基于分支比较覆盖，参数1：本地仓库，参数2：开发分支（预发分支），参数3：基线分支(不传时默认为master)
         //本地Git路径，新分支 第三个参数不传时默认比较maser，传参数为待比较的基线分支
 		final CoverageBuilder coverageBuilder = new CoverageBuilder("E:\\Git-pro\\JacocoTest","daily");
+        
+        //基于Tag比较的覆盖 参数1：本地仓库，参数2：代码分支，参数3：新Tag(预发版本)，参数4：基线Tag（变更前的版本）
+        //final CoverageBuilder coverageBuilder = new CoverageBuilder("E:\\Git-pro\\JacocoTest","daily","v004","v003");
 		
 		
 		final Analyzer analyzer = new Analyzer(execFileLoader.getExecutionDataStore(), coverageBuilder);

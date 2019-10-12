@@ -85,6 +85,33 @@ public class GitAdapter {
         ObjectId objId = branch.getObjectId();
         RevWalk walk = new RevWalk(repository);
         RevTree tree = walk.parseTree(objId);
+        return  getFileContent(javaPath,tree,walk);
+    }
+
+    /**
+     * 获取指定分支指定Tag版本的指定文件内容
+     * @param tagRevision       Tag版本
+     * @param javaPath          件路径
+     * @return  java类
+     * @throws IOException
+     */
+    public String getTagRevisionSpecificFileContent(String tagRevision, String javaPath) throws IOException {
+        ObjectId objId = repository.resolve(tagRevision);
+        RevWalk walk = new RevWalk(repository);
+        RevCommit revCommit = walk.parseCommit(objId);
+        RevTree tree = revCommit.getTree();
+        return  getFileContent(javaPath,tree,walk);
+    }
+    
+    /**
+     * 获取指定分支指定的指定文件内容
+     * @param javaPath      件路径
+     * @param tree          git RevTree
+     * @param walk          git RevWalk
+     * @return  java类
+     * @throws IOException
+     */
+    private String getFileContent(String javaPath,RevTree tree,RevWalk walk) throws IOException {
         TreeWalk treeWalk = TreeWalk.forPath(repository, javaPath, tree);
         ObjectId blobId = treeWalk.getObjectId(0);
         ObjectLoader loader = repository.open(blobId);
